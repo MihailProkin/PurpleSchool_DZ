@@ -5,11 +5,12 @@ import (
 	"fmt"
 )
 
-// Константы для конвертации валют
-const (
-	usdToEur = 0.85
-	usdToRub = 90.0
-)
+// Коэффициенты для конвертации валют
+var conversionRates = map[string]float64{
+	"USD": 1,
+	"EUR": 0.85,
+	"RUB": 90.0,
+}
 
 // Функция для считывания и проверки ввода валюты
 func getCurrencyInput(prompt string) (string, error) {
@@ -41,29 +42,11 @@ func convertCurrency(amount float64, fromCurrency, toCurrency string) float64 {
 		return amount
 	}
 
-	var amountInUSD float64
-
 	// Конвертация в USD
-	switch fromCurrency {
-	case "USD":
-		amountInUSD = amount
-	case "EUR":
-		amountInUSD = amount / usdToEur
-	case "RUB":
-		amountInUSD = amount / usdToRub
-	}
+	amountInUSD := amount / conversionRates[fromCurrency]
 
 	// Конвертация из USD в целевую валюту
-	switch toCurrency {
-	case "USD":
-		return amountInUSD
-	case "EUR":
-		return amountInUSD * usdToEur
-	case "RUB":
-		return amountInUSD * usdToRub
-	}
-
-	return 0.0
+	return amountInUSD * conversionRates[toCurrency]
 }
 
 func main() {

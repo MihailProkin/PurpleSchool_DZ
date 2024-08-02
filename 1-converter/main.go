@@ -37,16 +37,16 @@ func getAmountInput(prompt string) (float64, error) {
 }
 
 // Функция для расчета конвертации
-func convertCurrency(amount float64, fromCurrency, toCurrency string) float64 {
+func convertCurrency(amount float64, fromCurrency, toCurrency string, rates *map[string]float64) float64 {
 	if fromCurrency == toCurrency {
 		return amount
 	}
 
 	// Конвертация в USD
-	amountInUSD := amount / conversionRates[fromCurrency]
+	amountInUSD := amount / (*rates)[fromCurrency]
 
 	// Конвертация из USD в целевую валюту
-	return amountInUSD * conversionRates[toCurrency]
+	return amountInUSD * (*rates)[toCurrency]
 }
 
 func main() {
@@ -84,7 +84,7 @@ func main() {
 	}
 
 	// Конвертация валюты
-	convertedAmount := convertCurrency(amount, fromCurrency, toCurrency)
+	convertedAmount := convertCurrency(amount, fromCurrency, toCurrency, &conversionRates)
 
 	// Вывод результата
 	fmt.Printf("%.2f %s = %.2f %s\n", amount, fromCurrency, convertedAmount, toCurrency)

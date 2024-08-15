@@ -5,11 +5,12 @@ import (
 	"fmt"
 )
 
-// Константы для конвертации валют
-const (
-	usdToEur = 0.85
-	usdToRub = 90.0
-)
+// Коэффициенты для конвертации валют
+var conversionRates = map[string]float64{
+	"USD": 1,
+	"EUR": 0.85,
+	"RUB": 90.0,
+}
 
 // Функция для считывания и проверки ввода валюты
 func getCurrencyInput(prompt string) (string, error) {
@@ -36,34 +37,16 @@ func getAmountInput(prompt string) (float64, error) {
 }
 
 // Функция для расчета конвертации
-func convertCurrency(amount float64, fromCurrency, toCurrency string) float64 {
+func convertCurrency(amount float64, fromCurrency, toCurrency string, rates *map[string]float64) float64 {
 	if fromCurrency == toCurrency {
 		return amount
 	}
 
-	var amountInUSD float64
-
 	// Конвертация в USD
-	switch fromCurrency {
-	case "USD":
-		amountInUSD = amount
-	case "EUR":
-		amountInUSD = amount / usdToEur
-	case "RUB":
-		amountInUSD = amount / usdToRub
-	}
+	amountInUSD := amount / (*rates)[fromCurrency]
 
 	// Конвертация из USD в целевую валюту
-	switch toCurrency {
-	case "USD":
-		return amountInUSD
-	case "EUR":
-		return amountInUSD * usdToEur
-	case "RUB":
-		return amountInUSD * usdToRub
-	}
-
-	return 0.0
+	return amountInUSD * (*rates)[toCurrency]
 }
 
 func main() {
@@ -101,7 +84,7 @@ func main() {
 	}
 
 	// Конвертация валюты
-	convertedAmount := convertCurrency(amount, fromCurrency, toCurrency)
+	convertedAmount := convertCurrency(amount, fromCurrency, toCurrency, &conversionRates)
 
 	// Вывод результата
 	fmt.Printf("%.2f %s = %.2f %s\n", amount, fromCurrency, convertedAmount, toCurrency)
